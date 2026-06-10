@@ -1,0 +1,52 @@
+# MDLM fine-tuning — shared across 4 cyanobacteria species.
+# CLI --species {7120,6803,MED4,MIT9313} expands data.{train,val,test}_csv
+# and output.run_name. The defaults below point at 7120 so the config also
+# works standalone without --species. Per-species sample counts:
+#   7120     12,560 (low 37.7% / mid 49.5% / high 12.9%)
+#   6803      3,712 (low 48.7% / mid 39.2% / high 12.1%)
+#   MED4      3,303 (low 48.1% / mid 38.4% / high 13.6%)
+#   MIT9313   7,352 (low 47.0% / mid 40.4% / high 12.6%)
+
+data:
+  train_csv: data/7120/processed_data/train.csv
+  val_csv: data/7120/processed_data/val.csv
+  test_csv: data/7120/processed_data/test.csv
+  seq_len: 81
+  num_workers: 4
+
+model:
+  n_layers: 8
+  hidden_dim: 256
+  n_heads: 8
+  ffn_dim: 1024
+  dropout: 0.1
+  n_cond_classes: 3
+
+diffusion:
+  steps: 1000
+
+train:
+  epochs: 300
+  batch_size: 128
+  lr: 5.0e-4
+  min_lr_ratio: 0.1
+  weight_decay: 0.01
+  warmup_steps: 200
+  max_grad_norm: 1.0
+  early_stopping_patience: 30
+  cfg_dropout: 0.15
+  cond_warmup_epochs: 10
+
+pretrain:
+  checkpoint: runs/pretrain/pt_v3/0413_170237/best_model.pt
+
+output:
+  save_dir: runs/finetune/
+  run_name: ft_v3_7120
+  log_interval: 10
+  val_interval: 1
+  gen_interval: 1
+  gen_eval_steps: 200
+  use_wandb: false
+
+seed: 42

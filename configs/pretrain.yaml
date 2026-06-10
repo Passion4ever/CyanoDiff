@@ -1,0 +1,40 @@
+# MDLM pretraining — random 81bp crops over 486 cyanobacterial genomes.
+# Shared by the main pretrain run and all LTSO leave-one-species-out runs;
+# LTSO overrides data.fasta_dir and output.run_name from the CLI:
+#   --fasta-dir data/cyanobacteria_genomes/fasta_ltso_<sp> --run-name pt_ltso_<sp>
+
+data:
+  fasta_dir: data/cyanobacteria_genomes/fasta
+  seq_len: 81
+  samples_per_epoch: 2_000_000
+  val_samples: 100_000
+  val_ratio: 0.05
+  num_workers: 4
+
+model:
+  n_layers: 8
+  hidden_dim: 256
+  n_heads: 8
+  ffn_dim: 1024
+  dropout: 0.1
+
+diffusion:
+  steps: 1000
+
+train:
+  epochs: 50
+  batch_size: 4096
+  lr: 8.5e-4
+  weight_decay: 0.01
+  warmup_steps: 125
+  max_grad_norm: 1.0
+  early_stopping_patience: 10
+
+output:
+  save_dir: runs/pretrain/
+  run_name: pt_v3
+  log_interval: 50
+  val_interval: 1
+  use_wandb: false
+
+seed: 42
